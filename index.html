@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Glad Tiding Plumbing Service - Business Manager</title>
+    
+    <!-- PWA Meta Tags for Add to Home Screen -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GladTiding">
+    <meta name="application-name" content="GladTiding">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="msapplication-TileColor" content="#0284c7">
+    
+    <!-- App Icon (Base64 embedded) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230284c7'/%3E%3Cpath d='M35 55 L45 70 L65 35' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230284c7'/%3E%3Cpath d='M35 55 L45 70 L65 35' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tab-btn.active { background: #0ea5e9; color: white; }
+        .modal { display: none; }
+        .modal.show { display: flex; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+        .reminder-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-sky-600 to-blue-700 text-white shadow-lg no-print">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white p-2 rounded-full">
+                        <i class="fas fa-wrench text-sky-600 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold">Glad Tiding Plumbing Service</h1>
+                        <p class="text-sky-200 text-sm">Business Management System</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="checkReminders()" class="relative" title="Reminders">
+                        <i class="fas fa-bell text-xl"></i>
+                        <span id="reminderBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center reminder-pulse">0</span>
+                    </button>
+                    <span class="text-sm hidden md:block" id="currentDate"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-white shadow-md sticky top-0 z-40 no-print">
+        <div class="container mx-auto px-4">
+            <div class="flex overflow-x-auto gap-1 py-2">
+                <button class="tab-btn active px-4 py-2 rounded-lg font-medium whitespace-nowrap transition" onclick="showTab('dashboard')">
+                    <i class="fas fa-home mr-1"></i> Dashboard
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('appointments')">
+                    <i class="fas fa-calendar mr-1"></i> Appointments
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('clients')">
+                    <i class="fas fa-users mr-1"></i> Clients
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('quotes')">
+                    <i class="fas fa-file-alt mr-1"></i> Quotes
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('invoices')">
+                    <i class="fas fa-file-invoice mr-1"></i> Invoices
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('finances')">
+                    <i class="fas fa-naira-sign mr-1"></i> Finances
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('sales')">
+                    <i class="fas fa-table mr-1"></i> Sales Sheet
+                </button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium whitespace-nowrap transition hover:bg-gray-100" onclick="showTab('team')">
+                    <i class="fas fa-user-hard-hat mr-1"></i> Team
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-6">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100">Total Income</p>
+                            <p class="text-2xl font-bold">₦<span id="totalIncome">0</span></p>
+                        </div>
+                        <i class="fas fa-arrow-up text-3xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-red-100">Total Expenses</p>
+                            <p class="text-2xl font-bold">₦<span id="totalExpenses">0</span></p>
+                        </div>
+                        <i class="fas fa-arrow-down text-3xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-sky-500 to-sky-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sky-100">Net Profit</p>
+                            <p class="text-2xl font-bold">₦<span id="netProfit">0</span></p>
+                        </div>
+                        <i class="fas fa-chart-line text-3xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100">Today's Appointments</p>
+                            <p class="text-2xl font-bold"><span id="todayAppointments">0</span></p>
+                        </div>
+                        <i class="fas fa-calendar-check text-3xl opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expense Breakdown -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800"><i class="fas fa-chart-pie mr-2 text-sky-600"></i>Expense Breakdown</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                            <span class="flex items-center"><i class="fas fa-utensils text-orange-500 mr-2"></i> Food/Feeding</span>
+                            <span class="font-bold text-orange-600">₦<span id="expFood">0</span></span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <span class="flex items-center"><i class="fas fa-car text-blue-500 mr-2"></i> Transport</span>
+                            <span class="font-bold text-blue-600">₦<span id="expTransport">0</span></span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <span class="flex items-center"><i class="fas fa-tools text-green-500 mr-2"></i> Materials</span>
+                            <span class="font-bold text-green-600">₦<span id="expMaterials">0</span></span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                            <span class="flex items-center"><i class="fas fa-hand-holding-usd text-purple-500 mr-2"></i> Labour</span>
+                            <span class="font-bold text-purple-600">₦<span id="expLabour">0</span></span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <span class="flex items-center"><i class="fas fa-ellipsis-h text-gray-500 mr-2"></i> Other</span>
+                            <span class="font-bold text-gray-600">₦<span id="expOther">0</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800"><i class="fas fa-clock mr-2 text-sky-600"></i>Upcoming Appointments</h3>
+                    <div id="upcomingAppointments" class="space-y-3 max-h-64 overflow-y-auto">
+                        <p class="text-gray-500 text-center py-4">No upcoming appointments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800"><i class="fas fa-bolt mr-2 text-yellow-500"></i>Quick Actions</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button onclick="showTab('appointments'); openAppointmentModal()" class="p-4 bg-sky-50 hover:bg-sky-100 rounded-lg text-center transition">
+                        <i class="fas fa-calendar-plus text-2xl text-sky-600 mb-2"></i>
+                        <p class="text-sm font-medium">New Appointment</p>
+                    </button>
+                    <button onclick="showTab('finances'); document.getElementById('expenseForm').scrollIntoView()" class="p-4 bg-red-50 hover:bg-red-100 rounded-lg text-center transition">
+                        <i class="fas fa-minus-circle text-2xl text-red-600 mb-2"></i>
+                        <p class="text-sm font-medium">Add Expense</p>
+                    </button>
+                    <button onclick="showTab('invoices'); openInvoiceModal()" class="p-4 bg-green-50 hover:bg-green-100 rounded-lg text-center transition">
+                        <i class="fas fa-file-invoice text-2xl text-green-600 mb-2"></i>
+                        <p class="text-sm font-medium">New Invoice</p>
+                    </button>
+                    <button onclick="showTab('quotes'); openQuoteModal()" class="p-4 bg-purple-50 hover:bg-purple-100 rounded-lg text-center transition">
+                        <i class="fas fa-file-alt text-2xl text-purple-600 mb-2"></i>
+                        <p class="text-sm font-medium">New Quote</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div id="appointments" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-calendar-alt mr-2 text-sky-600"></i>Appointments</h2>
+                    <button onclick="openAppointmentModal()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-plus mr-2"></i>New Appointment
+                    </button>
+                </div>
+                
+                <!-- Calendar View -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="calendarMonth" class="text-lg font-bold"></h3>
+                        <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                        <div class="font-bold text-gray-600 text-sm">Sun</div>
+                        <div class="font-bold text-gray-600 text-sm">Mon</div>
+                        <div class="font-bold text-gray-600 text-sm">Tue</div>
+                        <div class="font-bold text-gray-600 text-sm">Wed</div>
+                        <div class="font-bold text-gray-600 text-sm">Thu</div>
+                        <div class="font-bold text-gray-600 text-sm">Fri</div>
+                        <div class="font-bold text-gray-600 text-sm">Sat</div>
+                    </div>
+                    <div id="calendarDays" class="grid grid-cols-7 gap-1"></div>
+                </div>
+
+                <!-- Appointments List -->
+                <div id="appointmentsList" class="space-y-3">
+                    <p class="text-gray-500 text-center py-4">No appointments scheduled</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clients Tab -->
+        <div id="clients" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-users mr-2 text-sky-600"></i>Clients</h2>
+                    <button onclick="openClientModal()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Client
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="clientSearch" placeholder="Search clients..." class="w-full p-3 border rounded-lg" onkeyup="searchClients()">
+                </div>
+                <div id="clientsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <p class="text-gray-500 text-center py-4 col-span-full">No clients added yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quotes Tab -->
+        <div id="quotes" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-file-alt mr-2 text-sky-600"></i>Quotes</h2>
+                    <button onclick="openQuoteModal()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-plus mr-2"></i>New Quote
+                    </button>
+                </div>
+                <div id="quotesList" class="space-y-4">
+                    <p class="text-gray-500 text-center py-4">No quotes created yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Tab -->
+        <div id="invoices" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-file-invoice mr-2 text-sky-600"></i>Invoices</h2>
+                    <button onclick="openInvoiceModal()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-plus mr-2"></i>New Invoice
+                    </button>
+                </div>
+                <div id="invoicesList" class="space-y-4">
+                    <p class="text-gray-500 text-center py-4">No invoices created yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finances Tab -->
+        <div id="finances" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Income Form -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold mb-4 text-green-600"><i class="fas fa-plus-circle mr-2"></i>Add Income</h3>
+                    <form id="incomeForm" onsubmit="addIncome(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Description</label>
+                            <input type="text" id="incomeDesc" required class="w-full p-3 border rounded-lg" placeholder="e.g., Pipe installation for Mr. Ade">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Amount (₦)</label>
+                            <input type="number" id="incomeAmount" required class="w-full p-3 border rounded-lg" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date</label>
+                            <input type="date" id="incomeDate" required class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Client (Optional)</label>
+                            <select id="incomeClient" class="w-full p-3 border rounded-lg">
+                                <option value="">Select client</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-save mr-2"></i>Save Income
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Expense Form -->
+                <div class="bg-white rounded-xl shadow-lg p-6" id="expenseForm">
+                    <h3 class="text-lg font-bold mb-4 text-red-600"><i class="fas fa-minus-circle mr-2"></i>Add Expense</h3>
+                    <form onsubmit="addExpense(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Category</label>
+                            <select id="expenseCategory" required class="w-full p-3 border rounded-lg">
+                                <option value="food">🍽️ Food/Feeding</option>
+                                <option value="transport">🚗 Transport</option>
+                                <option value="materials">🔧 Materials</option>
+                                <option value="labour">👷 Labour</option>
+                                <option value="other">📦 Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Description</label>
+                            <input type="text" id="expenseDesc" required class="w-full p-3 border rounded-lg" placeholder="e.g., PVC pipes for job">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Amount (₦)</label>
+                            <input type="number" id="expenseAmount" required class="w-full p-3 border rounded-lg" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date</label>
+                            <input type="date" id="expenseDate" required class="w-full p-3 border rounded-lg">
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition">
+                            <i class="fas fa-save mr-2"></i>Save Expense
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+                <h3 class="text-lg font-bold mb-4 text-gray-800"><i class="fas fa-history mr-2 text-sky-600"></i>Recent Transactions</h3>
+                <div id="recentTransactions" class="space-y-3 max-h-96 overflow-y-auto">
+                    <p class="text-gray-500 text-center py-4">No transactions yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Sheet Tab -->
+        <div id="sales" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-table mr-2 text-sky-600"></i>Sales Sheet (Excel View)</h2>
+                    <div class="flex gap-2">
+                        <input type="month" id="salesFilter" class="p-2 border rounded-lg" onchange="filterSales()">
+                        <button onclick="exportToCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-download mr-2"></i>Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border p-3 text-left">Date</th>
+                                <th class="border p-3 text-left">Type</th>
+                                <th class="border p-3 text-left">Category</th>
+                                <th class="border p-3 text-left">Description</th>
+                                <th class="border p-3 text-left">Client</th>
+                                <th class="border p-3 text-right">Income (₦)</th>
+                                <th class="border p-3 text-right">Expense (₦)</th>
+                                <th class="border p-3 text-right">Balance (₦)</th>
+                                <th class="border p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <tr><td colspan="9" class="border p-4 text-center text-gray-500">No data available</td></tr>
+                        </tbody>
+                        <tfoot id="salesTotals" class="bg-gray-50 font-bold">
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Tab -->
+        <div id="team" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-xl font-bold text-gray-800"><i class="fas fa-users-cog mr-2 text-sky-600"></i>Team Members</h2>
+                    <button onclick="openTeamModal()" class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-plus mr-2"></i>Add Team Member
+                    </button>
+                </div>
+                <div id="teamList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <p class="text-gray-500 text-center py-4 col-span-full">No team members added yet</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">New Appointment</h3>
+                    <button onclick="closeModal('appointmentModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="saveAppointment(event)" class="space-y-4">
+                    <input type="hidden" id="appointmentId">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Client *</label>
+                        <select id="appointmentClient" required class="w-full p-3 border rounded-lg">
+                            <option value="">Select client</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Service/Job Description *</label>
+                        <input type="text" id="appointmentService" required class="w-full p-3 border rounded-lg" placeholder="e.g., Fix leaking pipe">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date *</label>
+                            <input type="date" id="appointmentDate" required class="w-full p-3 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Time *</label>
+                            <input type="time" id="appointmentTime" required class="w-full p-3 border rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Duration (hours)</label>
+                        <input type="number" id="appointmentDuration" value="2" min="1" class="w-full p-3 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Assign To</label>
+                        <select id="appointmentAssignee" class="w-full p-3 border rounded-lg">
+                            <option value="">Select team member</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Address</label>
+                        <textarea id="appointmentAddress" class="w-full p-3 border rounded-lg" rows="2" placeholder="Client's address"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Notes</label>
+                        <textarea id="appointmentNotes" class="w-full p-3 border rounded-lg" rows="2" placeholder="Additional notes"></textarea>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="appointmentReminder" checked>
+                        <label for="appointmentReminder" class="text-sm">Send reminder (1 day before)</label>
+                    </div>
+                    <div id="conflictWarning" class="hidden bg-yellow-100 border border-yellow-400 text-yellow-700 p-3 rounded-lg">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Warning: This time slot conflicts with another appointment!
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-save mr-2"></i>Save Appointment
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Modal -->
+    <div id="clientModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Add Client</h3>
+                    <button onclick="closeModal('clientModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="saveClient(event)" class="space-y-4">
+                    <input type="hidden" id="clientId">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Full Name *</label>
+                        <input type="text" id="clientName" required class="w-full p-3 border rounded-lg" placeholder="e.g., Mr. Ade">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Phone Number *</label>
+                        <input type="tel" id="clientPhone" required class="w-full p-3 border rounded-lg" placeholder="e.g., 08012345678">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Email</label>
+                        <input type="email" id="clientEmail" class="w-full p-3 border rounded-lg" placeholder="e.g., client@email.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Address</label>
+                        <textarea id="clientAddress" class="w-full p-3 border rounded-lg" rows="2" placeholder="Client's address"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-save mr-2"></i>Save Client
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Modal -->
+    <div id="quoteModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Create Quote</h3>
+                    <button onclick="closeModal('quoteModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="saveQuote(event)" class="space-y-4">
+                    <input type="hidden" id="quoteId">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Quote # *</label>
+                            <input type="text" id="quoteNumber" required class="w-full p-3 border rounded-lg" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date</label>
+                            <input type="date" id="quoteDate" required class="w-full p-3 border rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Client *</label>
+                        <select id="quoteClient" required class="w-full p-3 border rounded-lg">
+                            <option value="">Select client</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Job Description</label>
+                        <textarea id="quoteDescription" class="w-full p-3 border rounded-lg" rows="2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Line Items</label>
+                        <div id="quoteItems" class="space-y-2">
+                            <div class="grid grid-cols-12 gap-2 items-center">
+                                <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg quote-item-desc">
+                                <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg quote-item-qty">
+                                <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg quote-item-price">
+                                <button type="button" onclick="removeQuoteItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addQuoteItem()" class="mt-2 text-sky-600 hover:text-sky-700">
+                            <i class="fas fa-plus mr-1"></i>Add Item
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between text-lg font-bold">
+                            <span>Total:</span>
+                            <span>₦<span id="quoteTotal">0</span></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Valid Until</label>
+                        <input type="date" id="quoteValidUntil" class="w-full p-3 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Terms & Conditions</label>
+                        <textarea id="quoteTerms" class="w-full p-3 border rounded-lg" rows="2">Payment due upon completion of work. Materials cost may vary based on market prices.</textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-save mr-2"></i>Save Quote
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Create Invoice</h3>
+                    <button onclick="closeModal('invoiceModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="saveInvoice(event)" class="space-y-4">
+                    <input type="hidden" id="invoiceId">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Invoice # *</label>
+                            <input type="text" id="invoiceNumber" required class="w-full p-3 border rounded-lg" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date</label>
+                            <input type="date" id="invoiceDate" required class="w-full p-3 border rounded-lg">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Client *</label>
+                        <select id="invoiceClient" required class="w-full p-3 border rounded-lg">
+                            <option value="">Select client</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Line Items</label>
+                        <div id="invoiceItems" class="space-y-2">
+                            <div class="grid grid-cols-12 gap-2 items-center">
+                                <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg invoice-item-desc">
+                                <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg invoice-item-qty">
+                                <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg invoice-item-price">
+                                <button type="button" onclick="removeInvoiceItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" onclick="addInvoiceItem()" class="mt-2 text-sky-600 hover:text-sky-700">
+                            <i class="fas fa-plus mr-1"></i>Add Item
+                        </button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex justify-between text-lg font-bold">
+                            <span>Total:</span>
+                            <span>₦<span id="invoiceTotal">0</span></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Due Date</label>
+                        <input type="date" id="invoiceDueDate" class="w-full p-3 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Status</label>
+                        <select id="invoiceStatus" class="w-full p-3 border rounded-lg">
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Notes</label>
+                        <textarea id="invoiceNotes" class="w-full p-3 border rounded-lg" rows="2">Thank you for your business!</textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-save mr-2"></i>Save Invoice
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Modal -->
+    <div id="teamModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Add Team Member</h3>
+                    <button onclick="closeModal('teamModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <form onsubmit="saveTeamMember(event)" class="space-y-4">
+                    <input type="hidden" id="teamMemberId">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Name *</label>
+                        <input type="text" id="teamName" required class="w-full p-3 border rounded-lg" placeholder="e.g., John">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Role *</label>
+                        <select id="teamRole" required class="w-full p-3 border rounded-lg">
+                            <option value="owner">Owner</option>
+                            <option value="apprentice">Apprentice</option>
+                            <option value="plumber">Plumber</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Phone</label>
+                        <input type="tel" id="teamPhone" class="w-full p-3 border rounded-lg" placeholder="e.g., 08012345678">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Daily Rate (₦)</label>
+                        <input type="number" id="teamRate" class="w-full p-3 border rounded-lg" placeholder="e.g., 5000">
+                    </div>
+                    <button type="submit" class="w-full bg-sky-600 text-white py-3 rounded-lg hover:bg-sky-700 transition">
+                        <i class="fas fa-save mr-2"></i>Save Team Member
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Quote/Invoice Modal -->
+    <div id="viewDocModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6" id="docPreview">
+            </div>
+            <div class="p-4 border-t flex gap-2 no-print">
+                <button onclick="printDoc()" class="flex-1 bg-sky-600 text-white py-2 rounded-lg hover:bg-sky-700 transition">
+                    <i class="fas fa-print mr-2"></i>Print
+                </button>
+                <button onclick="shareViaWhatsApp()" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                    <i class="fab fa-whatsapp mr-2"></i>WhatsApp
+                </button>
+                <button onclick="closeModal('viewDocModal')" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800"><i class="fas fa-bell text-yellow-500 mr-2"></i>Reminders</h3>
+                    <button onclick="closeModal('reminderModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="reminderList" class="space-y-3 max-h-96 overflow-y-auto">
+                    <p class="text-gray-500 text-center py-4">No reminders</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 z-50">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Install App Banner -->
+    <div id="installBanner" class="hidden fixed bottom-0 left-0 right-0 bg-gradient-to-r from-sky-600 to-blue-700 text-white p-4 shadow-lg z-50 no-print">
+        <div class="container mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-full">
+                    <i class="fas fa-wrench text-sky-600 text-xl"></i>
+                </div>
+                <div>
+                    <p class="font-bold">Install Glad Tiding App</p>
+                    <p class="text-sm text-sky-200">Add to home screen for quick access</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="hideInstallBanner()" class="px-3 py-2 text-sky-200 hover:text-white">Later</button>
+                <button onclick="showInstallInstructions()" class="px-4 py-2 bg-white text-sky-600 rounded-lg font-bold hover:bg-sky-50">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install Instructions Modal -->
+    <div id="installModal" class="modal fixed inset-0 bg-black/50 items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">📱 Add to Home Screen</h3>
+                    <button onclick="closeModal('installModal')" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                </div>
+                
+                <div id="installInstructionsIOS" class="hidden space-y-4">
+                    <p class="font-medium text-gray-700">For iPhone/iPad (Safari):</p>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+                            <span>Tap the <strong>Share button</strong> <i class="fas fa-share-square"></i> at the bottom</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+                            <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+                            <span>Tap <strong>"Add"</strong> in the top right</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="installInstructionsAndroid" class="hidden space-y-4">
+                    <p class="font-medium text-gray-700">For Android (Chrome):</p>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">1</span>
+                            <span>Tap the <strong>3 dots menu</strong> <i class="fas fa-ellipsis-v"></i> at the top right</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">2</span>
+                            <span>Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong></span>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                            <span class="bg-sky-100 text-sky-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">3</span>
+                            <span>Tap <strong>"Add"</strong> to confirm</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                    <p class="text-green-700 text-sm"><i class="fas fa-check-circle mr-2"></i>After adding, you'll see the app icon on your home screen. Tap it anytime to open!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let data = {
+            clients: [],
+            appointments: [],
+            quotes: [],
+            invoices: [],
+            income: [],
+            expenses: [],
+            team: [],
+            settings: {
+                businessName: 'Glad Tiding Plumbing Service',
+                phone: '',
+                address: ''
+            }
+        };
+
+        // Current calendar date
+        let currentCalendarDate = new Date();
+
+        // Load data from localStorage
+        function loadData() {
+            const saved = localStorage.getItem('gladTidingData');
+            if (saved) {
+                data = JSON.parse(saved);
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('gladTidingData', JSON.stringify(data));
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-4 right-4 ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-yellow-600'} text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-300 z-50`;
+            setTimeout(() => {
+                toast.className = `fixed bottom-4 right-4 ${type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-yellow-600'} text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300 z-50`;
+            }, 3000);
+        }
+
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.remove('hidden');
+            event?.target?.classList?.add('active') || document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+            
+            // Refresh content based on tab
+            if (tabId === 'dashboard') updateDashboard();
+            if (tabId === 'appointments') { renderCalendar(); renderAppointmentsList(); }
+            if (tabId === 'clients') renderClientsList();
+            if (tabId === 'quotes') renderQuotesList();
+            if (tabId === 'invoices') renderInvoicesList();
+            if (tabId === 'finances') { renderRecentTransactions(); populateClientDropdowns(); }
+            if (tabId === 'sales') renderSalesSheet();
+            if (tabId === 'team') renderTeamList();
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Client Functions
+        function openClientModal(id = null) {
+            document.getElementById('clientId').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('clientEmail').value = '';
+            document.getElementById('clientAddress').value = '';
+            
+            if (id) {
+                const client = data.clients.find(c => c.id === id);
+                if (client) {
+                    document.getElementById('clientId').value = client.id;
+                    document.getElementById('clientName').value = client.name;
+                    document.getElementById('clientPhone').value = client.phone;
+                    document.getElementById('clientEmail').value = client.email || '';
+                    document.getElementById('clientAddress').value = client.address || '';
+                }
+            }
+            openModal('clientModal');
+        }
+
+        function saveClient(e) {
+            e.preventDefault();
+            const id = document.getElementById('clientId').value || Date.now().toString();
+            const client = {
+                id,
+                name: document.getElementById('clientName').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value,
+                address: document.getElementById('clientAddress').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingIndex = data.clients.findIndex(c => c.id === id);
+            if (existingIndex >= 0) {
+                data.clients[existingIndex] = client;
+            } else {
+                data.clients.push(client);
+            }
+            
+            saveData();
+            closeModal('clientModal');
+            renderClientsList();
+            populateClientDropdowns();
+            showToast('Client saved successfully!');
+        }
+
+        function deleteClient(id) {
+            if (confirm('Are you sure you want to delete this client?')) {
+                data.clients = data.clients.filter(c => c.id !== id);
+                saveData();
+                renderClientsList();
+                populateClientDropdowns();
+                showToast('Client deleted!');
+            }
+        }
+
+        function renderClientsList() {
+            const container = document.getElementById('clientsList');
+            if (data.clients.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4 col-span-full">No clients added yet</p>';
+                return;
+            }
+            
+            container.innerHTML = data.clients.map(client => `
+                <div class="border rounded-lg p-4 hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-gray-800">${client.name}</h4>
+                            <p class="text-gray-600"><i class="fas fa-phone mr-1"></i>${client.phone}</p>
+                            ${client.email ? `<p class="text-gray-600 text-sm"><i class="fas fa-envelope mr-1"></i>${client.email}</p>` : ''}
+                            ${client.address ? `<p class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i>${client.address}</p>` : ''}
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openClientModal('${client.id}')" class="text-sky-600 hover:text-sky-700"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteClient('${client.id}')" class="text-red-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchClients() {
+            const query = document.getElementById('clientSearch').value.toLowerCase();
+            const filtered = data.clients.filter(c => 
+                c.name.toLowerCase().includes(query) || 
+                c.phone.includes(query)
+            );
+            
+            const container = document.getElementById('clientsList');
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4 col-span-full">No clients found</p>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(client => `
+                <div class="border rounded-lg p-4 hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-gray-800">${client.name}</h4>
+                            <p class="text-gray-600"><i class="fas fa-phone mr-1"></i>${client.phone}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openClientModal('${client.id}')" class="text-sky-600 hover:text-sky-700"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteClient('${client.id}')" class="text-red-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateClientDropdowns() {
+            const options = '<option value="">Select client</option>' + 
+                data.clients.map(c => `<option value="${c.id}">${c.name} - ${c.phone}</option>`).join('');
+            
+            document.getElementById('appointmentClient').innerHTML = options;
+            document.getElementById('quoteClient').innerHTML = options;
+            document.getElementById('invoiceClient').innerHTML = options;
+            document.getElementById('incomeClient').innerHTML = '<option value="">Select client</option>' + 
+                data.clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+
+        // Appointment Functions
+        function openAppointmentModal(id = null) {
+            document.getElementById('appointmentId').value = '';
+            document.getElementById('appointmentClient').value = '';
+            document.getElementById('appointmentService').value = '';
+            document.getElementById('appointmentDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentTime').value = '09:00';
+            document.getElementById('appointmentDuration').value = '2';
+            document.getElementById('appointmentAssignee').value = '';
+            document.getElementById('appointmentAddress').value = '';
+            document.getElementById('appointmentNotes').value = '';
+            document.getElementById('appointmentReminder').checked = true;
+            document.getElementById('conflictWarning').classList.add('hidden');
+            
+            populateClientDropdowns();
+            populateTeamDropdown();
+            
+            if (id) {
+                const apt = data.appointments.find(a => a.id === id);
+                if (apt) {
+                    document.getElementById('appointmentId').value = apt.id;
+                    document.getElementById('appointmentClient').value = apt.clientId;
+                    document.getElementById('appointmentService').value = apt.service;
+                    document.getElementById('appointmentDate').value = apt.date;
+                    document.getElementById('appointmentTime').value = apt.time;
+                    document.getElementById('appointmentDuration').value = apt.duration || 2;
+                    document.getElementById('appointmentAssignee').value = apt.assigneeId || '';
+                    document.getElementById('appointmentAddress').value = apt.address || '';
+                    document.getElementById('appointmentNotes').value = apt.notes || '';
+                    document.getElementById('appointmentReminder').checked = apt.reminder !== false;
+                }
+            }
+            openModal('appointmentModal');
+        }
+
+        function populateTeamDropdown() {
+            const options = '<option value="">Select team member</option>' + 
+                data.team.map(t => `<option value="${t.id}">${t.name} (${t.role})</option>`).join('');
+            document.getElementById('appointmentAssignee').innerHTML = options;
+        }
+
+        function checkAppointmentConflict(date, time, duration, excludeId = null) {
+            const newStart = new Date(`${date}T${time}`);
+            const newEnd = new Date(newStart.getTime() + duration * 60 * 60 * 1000);
+            
+            return data.appointments.some(apt => {
+                if (apt.id === excludeId || apt.status === 'cancelled') return false;
+                if (apt.date !== date) return false;
+                
+                const aptStart = new Date(`${apt.date}T${apt.time}`);
+                const aptEnd = new Date(aptStart.getTime() + (apt.duration || 2) * 60 * 60 * 1000);
+                
+                return (newStart < aptEnd && newEnd > aptStart);
+            });
+        }
+
+        function saveAppointment(e) {
+            e.preventDefault();
+            const id = document.getElementById('appointmentId').value || Date.now().toString();
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('appointmentTime').value;
+            const duration = parseInt(document.getElementById('appointmentDuration').value) || 2;
+            
+            // Check for conflicts
+            if (checkAppointmentConflict(date, time, duration, id)) {
+                document.getElementById('conflictWarning').classList.remove('hidden');
+                showToast('Warning: Time slot conflict detected!', 'warning');
+                return;
+            }
+            
+            const clientId = document.getElementById('appointmentClient').value;
+            const client = data.clients.find(c => c.id === clientId);
+            
+            const apt = {
+                id,
+                clientId,
+                clientName: client?.name || 'Unknown',
+                clientPhone: client?.phone || '',
+                service: document.getElementById('appointmentService').value,
+                date,
+                time,
+                duration,
+                assigneeId: document.getElementById('appointmentAssignee').value,
+                address: document.getElementById('appointmentAddress').value || client?.address || '',
+                notes: document.getElementById('appointmentNotes').value,
+                reminder: document.getElementById('appointmentReminder').checked,
+                status: 'scheduled',
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingIndex = data.appointments.findIndex(a => a.id === id);
+            if (existingIndex >= 0) {
+                data.appointments[existingIndex] = apt;
+            } else {
+                data.appointments.push(apt);
+            }
+            
+            saveData();
+            closeModal('appointmentModal');
+            renderCalendar();
+            renderAppointmentsList();
+            updateDashboard();
+            showToast('Appointment saved successfully!');
+        }
+
+        function deleteAppointment(id) {
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                data.appointments = data.appointments.filter(a => a.id !== id);
+                saveData();
+                renderCalendar();
+                renderAppointmentsList();
+                updateDashboard();
+                showToast('Appointment deleted!');
+            }
+        }
+
+        function completeAppointment(id) {
+            const apt = data.appointments.find(a => a.id === id);
+            if (apt) {
+                apt.status = 'completed';
+                saveData();
+                renderAppointmentsList();
+                showToast('Appointment marked as complete!');
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            document.getElementById('calendarMonth').textContent = 
+                new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date().toISOString().split('T')[0];
+            
+            let html = '';
+            
+            // Empty cells for days before first day of month
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="p-2"></div>';
+            }
+            
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const appointments = data.appointments.filter(a => a.date === dateStr && a.status !== 'cancelled');
+                const isToday = dateStr === today;
+                
+                html += `
+                    <div class="p-2 min-h-16 border rounded ${isToday ? 'bg-sky-100 border-sky-500' : 'hover:bg-gray-50'} cursor-pointer" 
+                         onclick="showDayAppointments('${dateStr}')">
+                        <div class="font-medium ${isToday ? 'text-sky-600' : ''}">${day}</div>
+                        ${appointments.length > 0 ? `<div class="text-xs bg-sky-500 text-white rounded px-1 mt-1">${appointments.length} apt</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('calendarDays').innerHTML = html;
+        }
+
+        function changeMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function showDayAppointments(date) {
+            const appointments = data.appointments.filter(a => a.date === date);
+            if (appointments.length > 0) {
+                alert(`Appointments on ${date}:\n\n${appointments.map(a => 
+                    `${a.time} - ${a.clientName}: ${a.service} (${a.status})`
+                ).join('\n')}`);
+            } else {
+                if (confirm(`No appointments on ${date}. Create one?`)) {
+                    openAppointmentModal();
+                    document.getElementById('appointmentDate').value = date;
+                }
+            }
+        }
+
+        function renderAppointmentsList() {
+            const container = document.getElementById('appointmentsList');
+            const sorted = [...data.appointments].sort((a, b) => 
+                new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
+            );
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No appointments scheduled</p>';
+                return;
+            }
+            
+            container.innerHTML = sorted.map(apt => {
+                const statusColors = {
+                    scheduled: 'bg-blue-100 text-blue-700',
+                    completed: 'bg-green-100 text-green-700',
+                    cancelled: 'bg-red-100 text-red-700'
+                };
+                
+                return `
+                    <div class="border rounded-lg p-4 hover:shadow-md transition ${apt.status === 'cancelled' ? 'opacity-50' : ''}">
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-bold text-gray-800">${apt.clientName}</span>
+                                    <span class="text-xs px-2 py-1 rounded-full ${statusColors[apt.status]}">${apt.status}</span>
+                                </div>
+                                <p class="text-gray-600"><i class="fas fa-wrench mr-1"></i>${apt.service}</p>
+                                <p class="text-gray-600"><i class="fas fa-calendar mr-1"></i>${apt.date} at ${apt.time}</p>
+                                ${apt.address ? `<p class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i>${apt.address}</p>` : ''}
+                            </div>
+                            <div class="flex gap-2">
+                                ${apt.status === 'scheduled' ? `<button onclick="completeAppointment('${apt.id}')" class="text-green-600 hover:text-green-700" title="Mark Complete"><i class="fas fa-check"></i></button>` : ''}
+                                <button onclick="sendWhatsAppReminder('${apt.id}')" class="text-green-600 hover:text-green-700" title="WhatsApp"><i class="fab fa-whatsapp"></i></button>
+                                <button onclick="openAppointmentModal('${apt.id}')" class="text-sky-600 hover:text-sky-700" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteAppointment('${apt.id}')" class="text-red-500 hover:text-red-600" title="Delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function sendWhatsAppReminder(appointmentId) {
+            const apt = data.appointments.find(a => a.id === appointmentId);
+            if (apt && apt.clientPhone) {
+                const message = encodeURIComponent(
+                    `Assalamu Alaykum!\n\nThis is a reminder from Glad Tiding Plumbing Service.\n\n` +
+                    `📅 Appointment Details:\n` +
+                    `Service: ${apt.service}\n` +
+                    `Date: ${apt.date}\n` +
+                    `Time: ${apt.time}\n` +
+                    `${apt.address ? `Address: ${apt.address}\n` : ''}` +
+                    `\nPlease confirm your availability. Jazakumullahu Khairan!`
+                );
+                window.open(`https://wa.me/234${apt.clientPhone.replace(/^0/, '')}?text=${message}`, '_blank');
+            } else {
+                showToast('No phone number for this client!', 'error');
+            }
+        }
+
+        // Quote Functions
+        function openQuoteModal(id = null) {
+            document.getElementById('quoteId').value = '';
+            document.getElementById('quoteNumber').value = 'QT-' + Date.now().toString().slice(-6);
+            document.getElementById('quoteDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('quoteClient').value = '';
+            document.getElementById('quoteDescription').value = '';
+            document.getElementById('quoteItems').innerHTML = `
+                <div class="grid grid-cols-12 gap-2 items-center">
+                    <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg quote-item-desc">
+                    <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg quote-item-qty" oninput="calculateQuoteTotal()">
+                    <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg quote-item-price" oninput="calculateQuoteTotal()">
+                    <button type="button" onclick="removeQuoteItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            document.getElementById('quoteTotal').textContent = '0';
+            
+            const validDate = new Date();
+            validDate.setDate(validDate.getDate() + 14);
+            document.getElementById('quoteValidUntil').value = validDate.toISOString().split('T')[0];
+            
+            populateClientDropdowns();
+            
+            if (id) {
+                const quote = data.quotes.find(q => q.id === id);
+                if (quote) {
+                    document.getElementById('quoteId').value = quote.id;
+                    document.getElementById('quoteNumber').value = quote.number;
+                    document.getElementById('quoteDate').value = quote.date;
+                    document.getElementById('quoteClient').value = quote.clientId;
+                    document.getElementById('quoteDescription').value = quote.description || '';
+                    document.getElementById('quoteValidUntil').value = quote.validUntil || '';
+                    document.getElementById('quoteTerms').value = quote.terms || '';
+                    
+                    document.getElementById('quoteItems').innerHTML = quote.items.map(item => `
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <input type="text" value="${item.description}" class="col-span-5 p-2 border rounded-lg quote-item-desc">
+                            <input type="number" value="${item.qty}" class="col-span-2 p-2 border rounded-lg quote-item-qty" oninput="calculateQuoteTotal()">
+                            <input type="number" value="${item.price}" class="col-span-3 p-2 border rounded-lg quote-item-price" oninput="calculateQuoteTotal()">
+                            <button type="button" onclick="removeQuoteItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                    calculateQuoteTotal();
+                }
+            }
+            openModal('quoteModal');
+        }
+
+        function addQuoteItem() {
+            const container = document.getElementById('quoteItems');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-12 gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg quote-item-desc">
+                <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg quote-item-qty" oninput="calculateQuoteTotal()">
+                <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg quote-item-price" oninput="calculateQuoteTotal()">
+                <button type="button" onclick="removeQuoteItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeQuoteItem(btn) {
+            btn.parentElement.remove();
+            calculateQuoteTotal();
+        }
+
+        function calculateQuoteTotal() {
+            const items = document.getElementById('quoteItems').children;
+            let total = 0;
+            for (let item of items) {
+                const qty = parseFloat(item.querySelector('.quote-item-qty')?.value) || 0;
+                const price = parseFloat(item.querySelector('.quote-item-price')?.value) || 0;
+                total += qty * price;
+            }
+            document.getElementById('quoteTotal').textContent = formatNumber(total);
+        }
+
+        function saveQuote(e) {
+            e.preventDefault();
+            const id = document.getElementById('quoteId').value || Date.now().toString();
+            const clientId = document.getElementById('quoteClient').value;
+            const client = data.clients.find(c => c.id === clientId);
+            
+            const items = [];
+            const itemElements = document.getElementById('quoteItems').children;
+            for (let item of itemElements) {
+                const desc = item.querySelector('.quote-item-desc')?.value;
+                const qty = parseFloat(item.querySelector('.quote-item-qty')?.value) || 0;
+                const price = parseFloat(item.querySelector('.quote-item-price')?.value) || 0;
+                if (desc && qty && price) {
+                    items.push({ description: desc, qty, price, total: qty * price });
+                }
+            }
+            
+            const total = items.reduce((sum, item) => sum + item.total, 0);
+            
+            const quote = {
+                id,
+                number: document.getElementById('quoteNumber').value,
+                date: document.getElementById('quoteDate').value,
+                clientId,
+                clientName: client?.name || 'Unknown',
+                clientPhone: client?.phone || '',
+                clientAddress: client?.address || '',
+                description: document.getElementById('quoteDescription').value,
+                items,
+                total,
+                validUntil: document.getElementById('quoteValidUntil').value,
+                terms: document.getElementById('quoteTerms').value,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingIndex = data.quotes.findIndex(q => q.id === id);
+            if (existingIndex >= 0) {
+                data.quotes[existingIndex] = quote;
+            } else {
+                data.quotes.push(quote);
+            }
+            
+            saveData();
+            closeModal('quoteModal');
+            renderQuotesList();
+            showToast('Quote saved successfully!');
+        }
+
+        function renderQuotesList() {
+            const container = document.getElementById('quotesList');
+            if (data.quotes.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No quotes created yet</p>';
+                return;
+            }
+            
+            container.innerHTML = data.quotes.map(quote => `
+                <div class="border rounded-lg p-4 hover:shadow-md transition">
+                    <div class="flex justify-between items-start flex-wrap gap-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-gray-800">${quote.number}</span>
+                                <span class="text-xs px-2 py-1 rounded-full ${quote.status === 'accepted' ? 'bg-green-100 text-green-700' : quote.status === 'declined' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">${quote.status}</span>
+                            </div>
+                            <p class="text-gray-600">${quote.clientName}</p>
+                            <p class="text-gray-500 text-sm">${quote.date}</p>
+                            <p class="font-bold text-green-600 text-lg">₦${formatNumber(quote.total)}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="viewQuote('${quote.id}')" class="text-sky-600 hover:text-sky-700" title="View"><i class="fas fa-eye"></i></button>
+                            <button onclick="convertQuoteToInvoice('${quote.id}')" class="text-green-600 hover:text-green-700" title="Convert to Invoice"><i class="fas fa-file-invoice"></i></button>
+                            <button onclick="openQuoteModal('${quote.id}')" class="text-sky-600 hover:text-sky-700" title="Edit"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteQuote('${quote.id}')" class="text-red-500 hover:text-red-600" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function viewQuote(id) {
+            const quote = data.quotes.find(q => q.id === id);
+            if (!quote) return;
+            
+            const preview = document.getElementById('docPreview');
+            preview.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <i class="fas fa-wrench text-sky-600 text-2xl"></i>
+                        <h2 class="text-2xl font-bold text-sky-600">Glad Tiding Plumbing Service</h2>
+                    </div>
+                    <p class="text-gray-600">Professional Plumbing Solutions</p>
+                </div>
+                <div class="border-t border-b py-4 mb-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">QUOTATION</h3>
+                            <p class="text-gray-600">${quote.number}</p>
+                            <p class="text-gray-600">Date: ${quote.date}</p>
+                            ${quote.validUntil ? `<p class="text-gray-600">Valid Until: ${quote.validUntil}</p>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold">${quote.clientName}</p>
+                            <p class="text-gray-600">${quote.clientPhone}</p>
+                            ${quote.clientAddress ? `<p class="text-gray-600">${quote.clientAddress}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+                ${quote.description ? `<p class="mb-4 text-gray-700"><strong>Description:</strong> ${quote.description}</p>` : ''}
+                <table class="w-full mb-4">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-2 text-left">Description</th>
+                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2 text-right">Price</th>
+                            <th class="p-2 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${quote.items.map(item => `
+                            <tr class="border-b">
+                                <td class="p-2">${item.description}</td>
+                                <td class="p-2 text-center">${item.qty}</td>
+                                <td class="p-2 text-right">₦${formatNumber(item.price)}</td>
+                                <td class="p-2 text-right">₦${formatNumber(item.total)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-bold bg-gray-50">
+                            <td colspan="3" class="p-2 text-right">Total:</td>
+                            <td class="p-2 text-right">₦${formatNumber(quote.total)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                ${quote.terms ? `<div class="text-sm text-gray-600 border-t pt-4"><strong>Terms & Conditions:</strong><br>${quote.terms}</div>` : ''}
+            `;
+            
+            window.currentDoc = { type: 'quote', data: quote };
+            openModal('viewDocModal');
+        }
+
+        function deleteQuote(id) {
+            if (confirm('Are you sure you want to delete this quote?')) {
+                data.quotes = data.quotes.filter(q => q.id !== id);
+                saveData();
+                renderQuotesList();
+                showToast('Quote deleted!');
+            }
+        }
+
+        function convertQuoteToInvoice(quoteId) {
+            const quote = data.quotes.find(q => q.id === quoteId);
+            if (!quote) return;
+            
+            // Create invoice from quote
+            const invoice = {
+                id: Date.now().toString(),
+                number: 'INV-' + Date.now().toString().slice(-6),
+                date: new Date().toISOString().split('T')[0],
+                clientId: quote.clientId,
+                clientName: quote.clientName,
+                clientPhone: quote.clientPhone,
+                clientAddress: quote.clientAddress,
+                items: [...quote.items],
+                total: quote.total,
+                dueDate: '',
+                status: 'pending',
+                notes: 'Thank you for your business!',
+                createdAt: new Date().toISOString()
+            };
+            
+            data.invoices.push(invoice);
+            quote.status = 'accepted';
+            saveData();
+            showToast('Quote converted to invoice!');
+            showTab('invoices');
+        }
+
+        // Invoice Functions
+        function openInvoiceModal(id = null) {
+            document.getElementById('invoiceId').value = '';
+            document.getElementById('invoiceNumber').value = 'INV-' + Date.now().toString().slice(-6);
+            document.getElementById('invoiceDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceClient').value = '';
+            document.getElementById('invoiceItems').innerHTML = `
+                <div class="grid grid-cols-12 gap-2 items-center">
+                    <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg invoice-item-desc">
+                    <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg invoice-item-qty" oninput="calculateInvoiceTotal()">
+                    <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg invoice-item-price" oninput="calculateInvoiceTotal()">
+                    <button type="button" onclick="removeInvoiceItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            document.getElementById('invoiceTotal').textContent = '0';
+            document.getElementById('invoiceDueDate').value = '';
+            document.getElementById('invoiceStatus').value = 'pending';
+            
+            populateClientDropdowns();
+            
+            if (id) {
+                const invoice = data.invoices.find(i => i.id === id);
+                if (invoice) {
+                    document.getElementById('invoiceId').value = invoice.id;
+                    document.getElementById('invoiceNumber').value = invoice.number;
+                    document.getElementById('invoiceDate').value = invoice.date;
+                    document.getElementById('invoiceClient').value = invoice.clientId;
+                    document.getElementById('invoiceDueDate').value = invoice.dueDate || '';
+                    document.getElementById('invoiceStatus').value = invoice.status;
+                    document.getElementById('invoiceNotes').value = invoice.notes || '';
+                    
+                    document.getElementById('invoiceItems').innerHTML = invoice.items.map(item => `
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <input type="text" value="${item.description}" class="col-span-5 p-2 border rounded-lg invoice-item-desc">
+                            <input type="number" value="${item.qty}" class="col-span-2 p-2 border rounded-lg invoice-item-qty" oninput="calculateInvoiceTotal()">
+                            <input type="number" value="${item.price}" class="col-span-3 p-2 border rounded-lg invoice-item-price" oninput="calculateInvoiceTotal()">
+                            <button type="button" onclick="removeInvoiceItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                    calculateInvoiceTotal();
+                }
+            }
+            openModal('invoiceModal');
+        }
+
+        function addInvoiceItem() {
+            const container = document.getElementById('invoiceItems');
+            const div = document.createElement('div');
+            div.className = 'grid grid-cols-12 gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" placeholder="Item description" class="col-span-5 p-2 border rounded-lg invoice-item-desc">
+                <input type="number" placeholder="Qty" value="1" class="col-span-2 p-2 border rounded-lg invoice-item-qty" oninput="calculateInvoiceTotal()">
+                <input type="number" placeholder="Price" class="col-span-3 p-2 border rounded-lg invoice-item-price" oninput="calculateInvoiceTotal()">
+                <button type="button" onclick="removeInvoiceItem(this)" class="col-span-2 p-2 text-red-500"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeInvoiceItem(btn) {
+            btn.parentElement.remove();
+            calculateInvoiceTotal();
+        }
+
+        function calculateInvoiceTotal() {
+            const items = document.getElementById('invoiceItems').children;
+            let total = 0;
+            for (let item of items) {
+                const qty = parseFloat(item.querySelector('.invoice-item-qty')?.value) || 0;
+                const price = parseFloat(item.querySelector('.invoice-item-price')?.value) || 0;
+                total += qty * price;
+            }
+            document.getElementById('invoiceTotal').textContent = formatNumber(total);
+        }
+
+        function saveInvoice(e) {
+            e.preventDefault();
+            const id = document.getElementById('invoiceId').value || Date.now().toString();
+            const clientId = document.getElementById('invoiceClient').value;
+            const client = data.clients.find(c => c.id === clientId);
+            
+            const items = [];
+            const itemElements = document.getElementById('invoiceItems').children;
+            for (let item of itemElements) {
+                const desc = item.querySelector('.invoice-item-desc')?.value;
+                const qty = parseFloat(item.querySelector('.invoice-item-qty')?.value) || 0;
+                const price = parseFloat(item.querySelector('.invoice-item-price')?.value) || 0;
+                if (desc && qty && price) {
+                    items.push({ description: desc, qty, price, total: qty * price });
+                }
+            }
+            
+            const total = items.reduce((sum, item) => sum + item.total, 0);
+            const status = document.getElementById('invoiceStatus').value;
+            
+            const invoice = {
+                id,
+                number: document.getElementById('invoiceNumber').value,
+                date: document.getElementById('invoiceDate').value,
+                clientId,
+                clientName: client?.name || 'Unknown',
+                clientPhone: client?.phone || '',
+                clientAddress: client?.address || '',
+                items,
+                total,
+                dueDate: document.getElementById('invoiceDueDate').value,
+                status,
+                notes: document.getElementById('invoiceNotes').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingIndex = data.invoices.findIndex(i => i.id === id);
+            if (existingIndex >= 0) {
+                data.invoices[existingIndex] = invoice;
+            } else {
+                data.invoices.push(invoice);
+            }
+            
+            // If invoice is paid, add to income
+            if (status === 'paid') {
+                const existingIncome = data.income.find(i => i.invoiceId === id);
+                if (!existingIncome) {
+                    data.income.push({
+                        id: Date.now().toString(),
+                        invoiceId: id,
+                        description: `Invoice ${invoice.number} - ${invoice.clientName}`,
+                        amount: total,
+                        date: invoice.date,
+                        clientId: clientId,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+            
+            saveData();
+            closeModal('invoiceModal');
+            renderInvoicesList();
+            updateDashboard();
+            showToast('Invoice saved successfully!');
+        }
+
+        function renderInvoicesList() {
+            const container = document.getElementById('invoicesList');
+            if (data.invoices.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No invoices created yet</p>';
+                return;
+            }
+            
+            container.innerHTML = data.invoices.map(invoice => {
+                const statusColors = {
+                    pending: 'bg-yellow-100 text-yellow-700',
+                    paid: 'bg-green-100 text-green-700',
+                    overdue: 'bg-red-100 text-red-700'
+                };
+                
+                return `
+                    <div class="border rounded-lg p-4 hover:shadow-md transition">
+                        <div class="flex justify-between items-start flex-wrap gap-2">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-800">${invoice.number}</span>
+                                    <span class="text-xs px-2 py-1 rounded-full ${statusColors[invoice.status]}">${invoice.status}</span>
+                                </div>
+                                <p class="text-gray-600">${invoice.clientName}</p>
+                                <p class="text-gray-500 text-sm">${invoice.date}</p>
+                                <p class="font-bold text-green-600 text-lg">₦${formatNumber(invoice.total)}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="viewInvoice('${invoice.id}')" class="text-sky-600 hover:text-sky-700" title="View"><i class="fas fa-eye"></i></button>
+                                <button onclick="openInvoiceModal('${invoice.id}')" class="text-sky-600 hover:text-sky-700" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteInvoice('${invoice.id}')" class="text-red-500 hover:text-red-600" title="Delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function viewInvoice(id) {
+            const invoice = data.invoices.find(i => i.id === id);
+            if (!invoice) return;
+            
+            const preview = document.getElementById('docPreview');
+            preview.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <i class="fas fa-wrench text-sky-600 text-2xl"></i>
+                        <h2 class="text-2xl font-bold text-sky-600">Glad Tiding Plumbing Service</h2>
+                    </div>
+                    <p class="text-gray-600">Professional Plumbing Solutions</p>
+                </div>
+                <div class="border-t border-b py-4 mb-4">
+                    <div class="flex justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-gray-800">INVOICE</h3>
+                            <p class="text-gray-600">${invoice.number}</p>
+                            <p class="text-gray-600">Date: ${invoice.date}</p>
+                            ${invoice.dueDate ? `<p class="text-gray-600">Due: ${invoice.dueDate}</p>` : ''}
+                            <p class="mt-2 px-2 py-1 rounded inline-block ${invoice.status === 'paid' ? 'bg-green-100 text-green-700' : invoice.status === 'overdue' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}">${invoice.status.toUpperCase()}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold">${invoice.clientName}</p>
+                            <p class="text-gray-600">${invoice.clientPhone}</p>
+                            ${invoice.clientAddress ? `<p class="text-gray-600">${invoice.clientAddress}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <table class="w-full mb-4">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="p-2 text-left">Description</th>
+                            <th class="p-2 text-center">Qty</th>
+                            <th class="p-2 text-right">Price</th>
+                            <th class="p-2 text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${invoice.items.map(item => `
+                            <tr class="border-b">
+                                <td class="p-2">${item.description}</td>
+                                <td class="p-2 text-center">${item.qty}</td>
+                                <td class="p-2 text-right">₦${formatNumber(item.price)}</td>
+                                <td class="p-2 text-right">₦${formatNumber(item.total)}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-bold bg-gray-50">
+                            <td colspan="3" class="p-2 text-right">Total:</td>
+                            <td class="p-2 text-right">₦${formatNumber(invoice.total)}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                ${invoice.notes ? `<div class="text-sm text-gray-600 border-t pt-4">${invoice.notes}</div>` : ''}
+                <div class="mt-6 pt-4 border-t text-center text-gray-500 text-sm">
+                    <p>Bank: [Your Bank Name] | Account: [Account Number] | Account Name: Glad Tiding Plumbing Service</p>
+                </div>
+            `;
+            
+            window.currentDoc = { type: 'invoice', data: invoice };
+            openModal('viewDocModal');
+        }
+
+        function deleteInvoice(id) {
+            if (confirm('Are you sure you want to delete this invoice?')) {
+                data.invoices = data.invoices.filter(i => i.id !== id);
+                saveData();
+                renderInvoicesList();
+                showToast('Invoice deleted!');
+            }
+        }
+
+        function printDoc() {
+            window.print();
+        }
+
+        function shareViaWhatsApp() {
+            if (window.currentDoc) {
+                const doc = window.currentDoc.data;
+                const type = window.currentDoc.type === 'quote' ? 'Quotation' : 'Invoice';
+                const message = encodeURIComponent(
+                    `Assalamu Alaykum!\n\n` +
+                    `${type} from Glad Tiding Plumbing Service\n\n` +
+                    `${type} #: ${doc.number}\n` +
+                    `Date: ${doc.date}\n` +
+                    `Total: ₦${formatNumber(doc.total)}\n\n` +
+                    `Items:\n${doc.items.map(i => `• ${i.description}: ₦${formatNumber(i.total)}`).join('\n')}\n\n` +
+                    `Jazakumullahu Khairan for your business!`
+                );
+                window.open(`https://wa.me/234${doc.clientPhone?.replace(/^0/, '')}?text=${message}`, '_blank');
+            }
+        }
+
+        // Finance Functions
+        function addIncome(e) {
+            e.preventDefault();
+            const income = {
+                id: Date.now().toString(),
+                description: document.getElementById('incomeDesc').value,
+                amount: parseFloat(document.getElementById('incomeAmount').value),
+                date: document.getElementById('incomeDate').value,
+                clientId: document.getElementById('incomeClient').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            data.income.push(income);
+            saveData();
+            
+            document.getElementById('incomeForm').reset();
+            document.getElementById('incomeDate').value = new Date().toISOString().split('T')[0];
+            
+            updateDashboard();
+            renderRecentTransactions();
+            renderSalesSheet();
+            showToast('Income added successfully!');
+        }
+
+        function addExpense(e) {
+            e.preventDefault();
+            const expense = {
+                id: Date.now().toString(),
+                category: document.getElementById('expenseCategory').value,
+                description: document.getElementById('expenseDesc').value,
+                amount: parseFloat(document.getElementById('expenseAmount').value),
+                date: document.getElementById('expenseDate').value,
+                createdAt: new Date().toISOString()
+            };
+            
+            data.expenses.push(expense);
+            saveData();
+            
+            e.target.reset();
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            
+            updateDashboard();
+            renderRecentTransactions();
+            renderSalesSheet();
+            showToast('Expense added successfully!');
+        }
+
+        function deleteTransaction(type, id) {
+            if (confirm('Delete this transaction?')) {
+                if (type === 'income') {
+                    data.income = data.income.filter(i => i.id !== id);
+                } else {
+                    data.expenses = data.expenses.filter(e => e.id !== id);
+                }
+                saveData();
+                updateDashboard();
+                renderRecentTransactions();
+                renderSalesSheet();
+                showToast('Transaction deleted!');
+            }
+        }
+
+        function renderRecentTransactions() {
+            const container = document.getElementById('recentTransactions');
+            const transactions = [
+                ...data.income.map(i => ({ ...i, type: 'income' })),
+                ...data.expenses.map(e => ({ ...e, type: 'expense' }))
+            ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No transactions yet</p>';
+                return;
+            }
+            
+            const categoryIcons = {
+                food: '🍽️',
+                transport: '🚗',
+                materials: '🔧',
+                labour: '👷',
+                other: '📦'
+            };
+            
+            container.innerHTML = transactions.map(t => `
+                <div class="flex justify-between items-center p-3 ${t.type === 'income' ? 'bg-green-50' : 'bg-red-50'} rounded-lg">
+                    <div>
+                        <p class="font-medium">${t.type === 'expense' ? categoryIcons[t.category] + ' ' : ''}${t.description}</p>
+                        <p class="text-sm text-gray-500">${t.date}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold ${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">
+                            ${t.type === 'income' ? '+' : '-'}₦${formatNumber(t.amount)}
+                        </span>
+                        <button onclick="deleteTransaction('${t.type}', '${t.id}')" class="text-gray-400 hover:text-red-500">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Sales Sheet Functions
+        function renderSalesSheet() {
+            const filterMonth = document.getElementById('salesFilter')?.value;
+            const tbody = document.getElementById('salesTableBody');
+            const tfoot = document.getElementById('salesTotals');
+            
+            let transactions = [
+                ...data.income.map(i => ({ ...i, type: 'income', category: 'Income' })),
+                ...data.expenses.map(e => ({ ...e, type: 'expense' }))
+            ].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (filterMonth) {
+                transactions = transactions.filter(t => t.date.startsWith(filterMonth));
+            }
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="border p-4 text-center text-gray-500">No data available</td></tr>';
+                tfoot.innerHTML = '';
+                return;
+            }
+            
+            const categoryLabels = {
+                food: 'Food/Feeding',
+                transport: 'Transport',
+                materials: 'Materials',
+                labour: 'Labour',
+                other: 'Other'
+            };
+            
+            let runningBalance = 0;
+            let totalIncome = 0;
+            let totalExpense = 0;
+            
+            tbody.innerHTML = transactions.map(t => {
+                const income = t.type === 'income' ? t.amount : 0;
+                const expense = t.type === 'expense' ? t.amount : 0;
+                runningBalance += income - expense;
+                totalIncome += income;
+                totalExpense += expense;
+                
+                const client = data.clients.find(c => c.id === t.clientId);
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="border p-2">${t.date}</td>
+                        <td class="border p-2"><span class="${t.type === 'income' ? 'text-green-600' : 'text-red-600'}">${t.type}</span></td>
+                        <td class="border p-2">${t.type === 'expense' ? categoryLabels[t.category] : '-'}</td>
+                        <td class="border p-2">${t.description}</td>
+                        <td class="border p-2">${client?.name || '-'}</td>
+                        <td class="border p-2 text-right text-green-600">${income ? '₦' + formatNumber(income) : '-'}</td>
+                        <td class="border p-2 text-right text-red-600">${expense ? '₦' + formatNumber(expense) : '-'}</td>
+                        <td class="border p-2 text-right ${runningBalance >= 0 ? 'text-green-600' : 'text-red-600'}">₦${formatNumber(runningBalance)}</td>
+                        <td class="border p-2 text-center">
+                            <button onclick="deleteTransaction('${t.type}', '${t.id}')" class="text-red-500 hover:text-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            tfoot.innerHTML = `
+                <tr>
+                    <td colspan="5" class="border p-2 text-right">TOTALS:</td>
+                    <td class="border p-2 text-right text-green-600">₦${formatNumber(totalIncome)}</td>
+                    <td class="border p-2 text-right text-red-600">₦${formatNumber(totalExpense)}</td>
+                    <td class="border p-2 text-right ${totalIncome - totalExpense >= 0 ? 'text-green-600' : 'text-red-600'}">₦${formatNumber(totalIncome - totalExpense)}</td>
+                    <td class="border p-2"></td>
+                </tr>
+            `;
+        }
+
+        function filterSales() {
+            renderSalesSheet();
+        }
+
+        function exportToCSV() {
+            const filterMonth = document.getElementById('salesFilter')?.value;
+            let transactions = [
+                ...data.income.map(i => ({ ...i, type: 'income', category: 'Income' })),
+                ...data.expenses.map(e => ({ ...e, type: 'expense' }))
+            ].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (filterMonth) {
+                transactions = transactions.filter(t => t.date.startsWith(filterMonth));
+            }
+            
+            const categoryLabels = {
+                food: 'Food/Feeding',
+                transport: 'Transport',
+                materials: 'Materials',
+                labour: 'Labour',
+                other: 'Other',
+                Income: 'Income'
+            };
+            
+            let csv = 'Date,Type,Category,Description,Client,Income,Expense\n';
+            transactions.forEach(t => {
+                const client = data.clients.find(c => c.id === t.clientId);
+                csv += `${t.date},${t.type},${categoryLabels[t.category] || t.category},"${t.description}",${client?.name || ''},${t.type === 'income' ? t.amount : ''},${t.type === 'expense' ? t.amount : ''}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `glad-tiding-sales-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showToast('CSV exported successfully!');
+        }
+
+        // Team Functions
+        function openTeamModal(id = null) {
+            document.getElementById('teamMemberId').value = '';
+            document.getElementById('teamName').value = '';
+            document.getElementById('teamRole').value = 'apprentice';
+            document.getElementById('teamPhone').value = '';
+            document.getElementById('teamRate').value = '';
+            
+            if (id) {
+                const member = data.team.find(t => t.id === id);
+                if (member) {
+                    document.getElementById('teamMemberId').value = member.id;
+                    document.getElementById('teamName').value = member.name;
+                    document.getElementById('teamRole').value = member.role;
+                    document.getElementById('teamPhone').value = member.phone || '';
+                    document.getElementById('teamRate').value = member.rate || '';
+                }
+            }
+            openModal('teamModal');
+        }
+
+        function saveTeamMember(e) {
+            e.preventDefault();
+            const id = document.getElementById('teamMemberId').value || Date.now().toString();
+            const member = {
+                id,
+                name: document.getElementById('teamName').value,
+                role: document.getElementById('teamRole').value,
+                phone: document.getElementById('teamPhone').value,
+                rate: parseFloat(document.getElementById('teamRate').value) || 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingIndex = data.team.findIndex(t => t.id === id);
+            if (existingIndex >= 0) {
+                data.team[existingIndex] = member;
+            } else {
+                data.team.push(member);
+            }
+            
+            saveData();
+            closeModal('teamModal');
+            renderTeamList();
+            showToast('Team member saved successfully!');
+        }
+
+        function deleteTeamMember(id) {
+            if (confirm('Are you sure you want to delete this team member?')) {
+                data.team = data.team.filter(t => t.id !== id);
+                saveData();
+                renderTeamList();
+                showToast('Team member deleted!');
+            }
+        }
+
+        function renderTeamList() {
+            const container = document.getElementById('teamList');
+            if (data.team.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4 col-span-full">No team members added yet</p>';
+                return;
+            }
+            
+            const roleIcons = {
+                owner: 'fa-crown text-yellow-500',
+                plumber: 'fa-wrench text-blue-500',
+                apprentice: 'fa-user-graduate text-green-500'
+            };
+            
+            container.innerHTML = data.team.map(member => `
+                <div class="border rounded-lg p-4 hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center">
+                                <i class="fas ${roleIcons[member.role]} text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">${member.name}</h4>
+                                <p class="text-gray-600 capitalize">${member.role}</p>
+                                ${member.phone ? `<p class="text-gray-500 text-sm"><i class="fas fa-phone mr-1"></i>${member.phone}</p>` : ''}
+                                ${member.rate ? `<p class="text-green-600 text-sm"><i class="fas fa-naira-sign mr-1"></i>${formatNumber(member.rate)}/day</p>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openTeamModal('${member.id}')" class="text-sky-600 hover:text-sky-700"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteTeamMember('${member.id}')" class="text-red-500 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Dashboard Functions
+        function updateDashboard() {
+            const totalIncome = data.income.reduce((sum, i) => sum + i.amount, 0);
+            const totalExpenses = data.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            document.getElementById('totalIncome').textContent = formatNumber(totalIncome);
+            document.getElementById('totalExpenses').textContent = formatNumber(totalExpenses);
+            document.getElementById('netProfit').textContent = formatNumber(netProfit);
+            
+            // Expense breakdown
+            const expByCategory = {
+                food: data.expenses.filter(e => e.category === 'food').reduce((sum, e) => sum + e.amount, 0),
+                transport: data.expenses.filter(e => e.category === 'transport').reduce((sum, e) => sum + e.amount, 0),
+                materials: data.expenses.filter(e => e.category === 'materials').reduce((sum, e) => sum + e.amount, 0),
+                labour: data.expenses.filter(e => e.category === 'labour').reduce((sum, e) => sum + e.amount, 0),
+                other: data.expenses.filter(e => e.category === 'other').reduce((sum, e) => sum + e.amount, 0)
+            };
+            
+            document.getElementById('expFood').textContent = formatNumber(expByCategory.food);
+            document.getElementById('expTransport').textContent = formatNumber(expByCategory.transport);
+            document.getElementById('expMaterials').textContent = formatNumber(expByCategory.materials);
+            document.getElementById('expLabour').textContent = formatNumber(expByCategory.labour);
+            document.getElementById('expOther').textContent = formatNumber(expByCategory.other);
+            
+            // Today's appointments
+            const today = new Date().toISOString().split('T')[0];
+            const todayApts = data.appointments.filter(a => a.date === today && a.status !== 'cancelled');
+            document.getElementById('todayAppointments').textContent = todayApts.length;
+            
+            // Upcoming appointments
+            const upcoming = data.appointments
+                .filter(a => a.date >= today && a.status === 'scheduled')
+                .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`))
+                .slice(0, 5);
+            
+            const upcomingContainer = document.getElementById('upcomingAppointments');
+            if (upcoming.length === 0) {
+                upcomingContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No upcoming appointments</p>';
+            } else {
+                upcomingContainer.innerHTML = upcoming.map(apt => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium">${apt.clientName}</p>
+                            <p class="text-sm text-gray-500">${apt.service}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sky-600 font-medium">${apt.date}</p>
+                            <p class="text-sm text-gray-500">${apt.time}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Reminder Functions
+        function checkReminders() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const todayStr = today.toISOString().split('T')[0];
+            
+            const reminders = data.appointments.filter(a => 
+                (a.date === todayStr || a.date === tomorrowStr) && 
+                a.status === 'scheduled' && 
+                a.reminder !== false
+            );
+            
+            const container = document.getElementById('reminderList');
+            
+            if (reminders.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No reminders for today or tomorrow</p>';
+            } else {
+                container.innerHTML = reminders.map(apt => `
+                    <div class="p-4 ${apt.date === todayStr ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'} border rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold">${apt.clientName}</p>
+                                <p class="text-gray-600">${apt.service}</p>
+                                <p class="text-sm ${apt.date === todayStr ? 'text-red-600' : 'text-yellow-600'} font-medium">
+                                    ${apt.date === todayStr ? '📢 TODAY' : '⏰ TOMORROW'} at ${apt.time}
+                                </p>
+                            </div>
+                            <button onclick="sendWhatsAppReminder('${apt.id}')" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                                <i class="fab fa-whatsapp mr-1"></i>Remind
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            openModal('reminderModal');
+            
+            // Update badge
+            const badge = document.getElementById('reminderBadge');
+            if (reminders.length > 0) {
+                badge.textContent = reminders.length;
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+            } else {
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+            }
+        }
+
+        // Utility Functions
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-NG').format(num || 0);
+        }
+
+        // Initialize App
+        function init() {
+            loadData();
+            
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-NG', {
+                weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'
+            });
+            
+            // Set default dates
+            document.getElementById('incomeDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('salesFilter').value = new Date().toISOString().slice(0, 7);
+            
+            // Initialize all views
+            updateDashboard();
+            renderCalendar();
+            renderAppointmentsList();
+            renderClientsList();
+            renderQuotesList();
+            renderInvoicesList();
+            renderRecentTransactions();
+            renderSalesSheet();
+            renderTeamList();
+            populateClientDropdowns();
+            
+            // Check for reminders on load
+            setTimeout(() => {
+                const today = new Date().toISOString().split('T')[0];
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const tomorrowStr = tomorrow.toISOString().split('T')[0];
+                
+                const reminders = data.appointments.filter(a => 
+                    (a.date === today || a.date === tomorrowStr) && 
+                    a.status === 'scheduled' && 
+                    a.reminder !== false
+                );
+                
+                const badge = document.getElementById('reminderBadge');
+                if (reminders.length > 0) {
+                    badge.textContent = reminders.length;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('flex');
+                }
+            }, 1000);
+        }
+
+        // Install App Functions
+        function showInstallBanner() {
+            const isInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+            const dismissed = localStorage.getItem('installBannerDismissed');
+            
+            if (!isInstalled && !dismissed) {
+                setTimeout(() => {
+                    document.getElementById('installBanner').classList.remove('hidden');
+                }, 3000);
+            }
+        }
+
+        function hideInstallBanner() {
+            document.getElementById('installBanner').classList.add('hidden');
+            localStorage.setItem('installBannerDismissed', 'true');
+        }
+
+        function showInstallInstructions() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isAndroid = /Android/.test(navigator.userAgent);
+            
+            document.getElementById('installInstructionsIOS').classList.add('hidden');
+            document.getElementById('installInstructionsAndroid').classList.add('hidden');
+            
+            if (isIOS) {
+                document.getElementById('installInstructionsIOS').classList.remove('hidden');
+            } else {
+                document.getElementById('installInstructionsAndroid').classList.remove('hidden');
+            }
+            
+            document.getElementById('installBanner').classList.add('hidden');
+            openModal('installModal');
+        }
+
+        // Check for native install prompt (Android Chrome)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').classList.remove('hidden');
+        });
+
+        // Show install banner on load
+        showInstallBanner();
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
